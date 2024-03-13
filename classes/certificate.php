@@ -265,8 +265,13 @@ class certificate {
         // Add the conditional SQL and the linkedincertid to form all used parameters.
         $allparams = $conditionsparams + array('linkedincertid' => $linkedincertid);
 
+        // Create an instance of the certificate class.
+        $certificate = new \mod_linkedincert\certificate();
+
+        // Get extra user fields.
+        $extrafields = $certificate->get_extra_user_fields_data(\context_module::instance($cm->id));
+
         // Return the issues.
-        $extrafields = get_extra_user_fields(\context_module::instance($cm->id));
         $ufields = \user_picture::fields('u', $extrafields);
         $sql = "SELECT $ufields, ci.id as issueid, ci.code, ci.timecreated
                   FROM {user} u
@@ -276,12 +281,24 @@ class certificate {
                    AND ci.linkedincertid = :linkedincertid
                        $conditionssql";
         if ($sort) {
-            $sql .= "ORDER BY " . $sort;
+            $sql .= " ORDER BY " . $sort;
         } else {
-            $sql .= "ORDER BY " . $DB->sql_fullname();
+            $sql .= " ORDER BY " . $DB->sql_fullname();
         }
 
         return $DB->get_records_sql($sql, $allparams, $limitfrom, $limitnum);
+    }
+
+    /**
+     * Get extra user fields data.
+     *
+     * @param \context $context
+     * @return array
+     */
+    public function get_extra_user_fields_data($context) {
+        $fields = [];
+
+        return $fields;
     }
 
     /**

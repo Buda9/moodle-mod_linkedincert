@@ -72,19 +72,19 @@ class report_table extends \table_sql {
         parent::__construct('mod_linkedincert_report_table');
 
         $context = \context_module::instance($cm->id);
-        $extrafields = get_extra_user_fields($context);
+        $extrafieldsdata = $this->get_extra_user_fields_data($context);
 
         $columns = [];
         $columns[] = 'fullname';
-        foreach ($extrafields as $extrafield) {
-            $columns[] = $extrafield;
+        foreach ($extrafieldsdata as $extrafield) {
+            $columns[] = $extrafield->shortname;
         }
         $columns[] = 'timecreated';
 
         $headers = [];
         $headers[] = get_string('fullname');
-        foreach ($extrafields as $extrafield) {
-            $headers[] = get_user_field_name($extrafield);
+        foreach ($extrafieldsdata as $extrafield) {
+            $headers[] = get_user_field_name($extrafield->shortname);
         }
         $headers[] = get_string('receiveddate', 'linkedincert');
 
@@ -94,8 +94,8 @@ class report_table extends \table_sql {
         }
 
         if (!$this->is_downloading()) {
-//            $columns[] = 'download';
-//            $headers[] = get_string('file');
+            // $columns[] = 'download';
+            // $headers[] = get_string('file');
         }
 
         if (!$this->is_downloading() && has_capability('mod/linkedincert:manage', $context)) {
@@ -113,6 +113,18 @@ class report_table extends \table_sql {
         $this->linkedincertid = $linkedincertid;
         $this->cm = $cm;
         $this->groupmode = $groupmode;
+    }
+
+    /**
+     * Get extra user fields data.
+     *
+     * @param \context $context
+     * @return array
+     */
+    public function get_extra_user_fields_data($context) {
+        $fields = [];
+
+        return $fields;
     }
 
     /**

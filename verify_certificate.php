@@ -96,18 +96,15 @@ if ($code) {
     $result->issues = array();
 
     // Ok, now check if the code is valid.
-    $userfields = get_all_user_name_fields(true, 'u');
-    $sql = "SELECT ci.id, u.id as userid, $userfields, co.id as courseid,
-                   co.fullname as coursefullname, c.id as certificateid,
-                   c.name as certificatename, c.verifyany
-              FROM {linkedincert} c
-              JOIN {linkedincert_issues} ci
-                ON c.id = ci.linkedincertid
-              JOIN {course} co
-                ON c.course = co.id
-              JOIN {user} u
-                ON ci.userid = u.id
-             WHERE ci.code = :code";
+    $userfieldssql = \core_user\fields::for_name()->with_userpic()->get_sql('u', false);
+    $sql = "SELECT ci.id, u.id as userid, " . trim($userfieldssql->selects, ', ') . ", co.id as courseid,
+    co.fullname as coursefullname, c.id as certificateid,
+    c.name as certificatename, c.verifyany
+    FROM {linkedincert} c
+    JOIN {linkedincert_issues} ci ON c.id = ci.linkedincertid
+    JOIN {course} co ON c.course = co.id
+    JOIN {user} u ON ci.userid = u.id
+    WHERE ci.code = :code";
 
     if ($checkallofsite) {
         // Only people with the capability to verify all the certificates can verify any.
